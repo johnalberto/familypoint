@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  // ¡Sin línea de output!
+}
+
+datasource db {
+  provider = "postgresql" // <--- CAMBIO IMPORTANTE: de sqlite a postgresql
+  url = env("POSTGRES_PRISMA_URL") // Usará la URL que Vercel nos dará
+  directUrl = env("POSTGRES_URL_NON_POOLING") // Necesario para Vercel
+}
+
+// Modelo para tus hijas y los participantes (tú y tu esposa)
+model Competitor {
+  id            String       @id @default(uuid())
+  name          String
+  birthDate     DateTime     // Clave para calcular la edad automáticamente
+  favoriteColor String       // Ej: "#FF5733"
+  photoUrl      String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  // Relación: Un competidor puede tener muchas infracciones
+  infractions   Infraction[]
+}
+
+// Configuración de las reglas del juego
+model Category {
+  id         String   @id @default(uuid())
+  name       String   // Ej: "Infantil", "Adolescente"
+  minAge     Int
+  maxAge     Int
+  fineAmount Float    // El valor de la multa para este rango
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// El registro de cada "falta"
+model Infraction {
+  id            String     @id @default(uuid())
+  reason        String     // Ej: "Gritar en la mesa"
+  amountCharged Float      // Guardamos el precio COBRADO en ese momento (snapshot)
+  createdAt     DateTime   @default(now())
+  
+  // Relación con el competidor
+  competitorId  String
+  competitor    Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
+}

@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Puedes agregar esto para suavizar el fondo general */
+body {
+  @apply bg-slate-50;
+}
