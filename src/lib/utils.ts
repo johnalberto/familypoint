@@ -12,5 +12,6 @@ export const formatCurrency = (amount: number) => {
     style: "currency",
     currency: "COP", // O USD, EUR, etc.
     minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amount);
 };

@@ -18,20 +18,20 @@ export function CategoryForm() {
         <Plus className="text-blue-600" size={20} />
         Nueva Regla de Juego
       </h3>
-      
-      <form 
-        ref={formRef} 
+
+      <form
+        ref={formRef}
         action={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
       >
         {/* Nombre */}
         <div className="space-y-1">
           <label className="text-xs font-bold text-slate-400 uppercase">Nombre</label>
-          <input 
-            name="name" 
-            type="text" 
-            placeholder="Ej: Adolescente" 
-            required 
+          <input
+            name="name"
+            type="text"
+            placeholder="Ej: Adolescente"
+            required
             className="w-full p-3 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
@@ -39,11 +39,11 @@ export function CategoryForm() {
         {/* Edad Mínima */}
         <div className="space-y-1">
           <label className="text-xs font-bold text-slate-400 uppercase">Edad Mín.</label>
-          <input 
-            name="minAge" 
-            type="number" 
-            placeholder="0" 
-            required 
+          <input
+            name="minAge"
+            type="number"
+            placeholder="0"
+            required
             className="w-full p-3 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
@@ -51,11 +51,11 @@ export function CategoryForm() {
         {/* Edad Máxima */}
         <div className="space-y-1">
           <label className="text-xs font-bold text-slate-400 uppercase">Edad Máx.</label>
-          <input 
-            name="maxAge" 
-            type="number" 
-            placeholder="12" 
-            required 
+          <input
+            name="maxAge"
+            type="number"
+            placeholder="12"
+            required
             className="w-full p-3 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
@@ -65,19 +65,20 @@ export function CategoryForm() {
           <label className="text-xs font-bold text-slate-400 uppercase">Valor Multa</label>
           <div className="relative">
             <span className="absolute left-3 top-3 text-slate-400">$</span>
-            <input 
-              name="fineAmount" 
-              type="number" 
-              placeholder="5000" 
-              required 
+            <input
+              name="fineAmount"
+              type="number"
+              step="0.1"
+              placeholder="5000"
+              required
               className="w-full p-3 pl-7 bg-slate-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
         </div>
 
         {/* Botón Guardar */}
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-xl flex items-center justify-center gap-2 transition-colors md:col-span-4 lg:col-span-1"
         >
           <Save size={18} /> Guardar
