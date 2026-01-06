@@ -23,14 +23,14 @@ export function EditCompetitorForm({ competitor }: EditCompetitorFormProps) {
   const handleSubmit = async (formData: FormData) => {
     setIsPending(true);
     // Pasamos el ID y el FormData a la Server Action
-    await updateCompetitor(competitor.id, formData); 
+    await updateCompetitor(competitor.id, formData);
     // No necesitamos setIsPending(false) porque la acción hace redirect
   };
 
   return (
     <form action={handleSubmit} className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 max-w-lg mx-auto">
       <div className="space-y-6">
-        
+
         {/* Nombre */}
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-bold text-slate-500 uppercase tracking-wider">
@@ -59,20 +59,36 @@ export function EditCompetitorForm({ competitor }: EditCompetitorFormProps) {
           />
         </div>
 
-        {/* Foto URL */}
+        {/* Foto (File Upload) */}
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-bold text-slate-500 uppercase tracking-wider">
-            <ImageIcon size={16} /> URL de la Foto
+            <ImageIcon size={16} /> Foto
           </label>
+
+          {/* Previsualización actual */}
+          {competitor.photoUrl && (
+            <div className="mb-2">
+              <p className="text-xs text-slate-400 mb-1">Actual:</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={competitor.photoUrl}
+                alt="Foto actual"
+                className="w-20 h-20 rounded-full object-cover border-2 border-slate-100 shadow-sm"
+              />
+            </div>
+          )}
+
+          {/* Input oculto para mantener la URL anterior si no se sube nada nuevo */}
+          <input type="hidden" name="currentPhotoUrl" value={competitor.photoUrl} />
+
           <input
-            name="photoUrl"
-            defaultValue={competitor.photoUrl}
-            type="url"
-            required
-            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-600"
+            name="photo"
+            type="file"
+            accept="image/*"
+            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all"
           />
           <p className="text-xs text-slate-400 pl-1">
-            Recomendado: Usa <code>api.dicebear.com</code> para avatares.
+            Sube una nueva imagen para reemplazar la actual.
           </p>
         </div>
 
