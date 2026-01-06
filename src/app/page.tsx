@@ -1,16 +1,20 @@
 import { db } from "@/lib/db";
 import { CompetitorCard } from "@/components/CompetitorCard";
 import { differenceInYears } from "date-fns";
-import { PiggyBank, Sparkles, Settings } from "lucide-react"; // <--- Asegúrate de importar Settings
+import { PiggyBank, Sparkles, Settings } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { FineButton } from "@/components/FineButton";
 import Link from "next/link";
+import { UserButton } from "@stackframe/stack";
+import { checkAdmin } from "@/lib/auth";
 
 const calculateAge = (birthDate: Date) => differenceInYears(new Date(), birthDate);
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
+  const isAdmin = await checkAdmin();
+
   const competitors = await db.competitor.findMany({
     include: { infractions: true },
   });
@@ -29,19 +33,27 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-slate-100 pb-24">
-      
+
       {/* Hero Header: Oscuro y con formas orgánicas */}
       <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-violet-900 text-white pt-16 pb-32 px-6 rounded-b-[3rem] shadow-2xl overflow-hidden">
-        
+
         {/* --- NUEVO: BOTÓN DE SETTINGS --- */}
-        <Link 
-          href="/settings"
-          className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm transition-all z-50 hover:rotate-90"
-          title="Configurar Categorías"
-        >
-          <Settings size={24} />
-        </Link>
-        {/* -------------------------------- */}
+        {/* Solo visible para admins */}
+        {isAdmin && (
+          <Link
+            href="/settings"
+            className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm transition-all z-50 hover:rotate-90"
+            title="Configurar Categorías"
+          >
+            <Settings size={24} />
+          </Link>
+        )}
+
+        {/* --- USER BUTTON --- */}
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50">
+          <UserButton />
+        </div>
+        {/* ------------------- */}
 
         {/* Elementos de fondo decorativos (Blobs) */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-40">
@@ -51,14 +63,14 @@ export default async function Home() {
 
         <div className="relative z-10 max-w-xl mx-auto text-center flex flex-col items-center">
           <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-blue-200 text-sm font-bold uppercase tracking-widest mb-6 border border-white/10 backdrop-blur-sm">
-            <Sparkles size={16} className="text-yellow-400"/> Family Point System
+            <Sparkles size={16} className="text-yellow-400" /> Family Point System
           </div>
-          
+
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-indigo-200">
             El Pozo Familiar
           </h1>
           <p className="text-blue-200 text-lg mb-8 font-medium">¿Quién paga la próxima pizza? 🍕</p>
-          
+
           <div className="inline-flex items-center gap-4 bg-white/10 p-6 rounded-3xl border-2 border-white/10 backdrop-blur-md shadow-xl">
             <div className="bg-gradient-to-br from-pink-500 to-orange-500 p-4 rounded-2xl shadow-lg">
               <PiggyBank size={48} className="text-white" />
@@ -82,7 +94,7 @@ export default async function Home() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 items-start">
             {scoreboard.map((member, index) => (
-              <Link href={`/competitors/${member.id}`} key={member.id} className="block h-full">
+              <Link href={`/competitors/${member.id}`} key={member.id} className="block h-full transition-transform hover:scale-[1.02]">
                 <CompetitorCard
                   rank={index + 1}
                   name={member.name}
@@ -97,8 +109,8 @@ export default async function Home() {
         )}
       </div>
 
-      {/* Botón Flotante para Multar */}
-      <FineButton competitors={competitorsList} />
+      {/* Botón Flotante para Multar (Solo Admin) */}
+      {isAdmin && <FineButton competitors={competitorsList} />}
     </main>
   );
 }

@@ -3,12 +3,20 @@ import { CategoryForm } from "@/components/CategoryForm";
 import { DeleteCategoryBtn } from "@/components/DeleteCategoryBtn";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
-import { ArrowLeft, Settings as SettingsIcon } from "lucide-react";
-import { ResetGameBtn } from "@/components/ResetGameBtn"; 
+import { ArrowLeft, Settings as SettingsIcon, UserPlus, Lock } from "lucide-react";
+import { ResetGameBtn } from "@/components/ResetGameBtn";
+import { checkAdmin } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
+  // 0. VERIFICAR ADMIN
+  const isAdmin = await checkAdmin();
+  if (!isAdmin) {
+    redirect("/"); // O mostrar un mensaje de error
+  }
+
   // 1. Obtener categorías ordenadas por edad
   const categories = await db.category.findMany({
     orderBy: { minAge: "asc" },
@@ -17,11 +25,11 @@ export default async function SettingsPage() {
   return (
     <main className="min-h-screen bg-slate-50 p-6 md:p-12">
       <div className="max-w-4xl mx-auto">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors font-medium"
           >
             <ArrowLeft size={20} /> Volver
@@ -32,7 +40,21 @@ export default async function SettingsPage() {
           </div>
         </div>
 
-        {/* Formulario de Creación */}
+        {/* --- NUEVO: GESTIÓN DE PARTICIPANTES --- */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8 flex items-center justify-between">
+          <div>
+            <h2 className="font-bold text-slate-800">Gestionar Participantes</h2>
+            <p className="text-sm text-slate-500">Añade nuevos miembros a la competencia familiar.</p>
+          </div>
+          <Link
+            href="/competitors/new"
+            className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg font-bold hover:bg-slate-800 transition-colors"
+          >
+            <UserPlus size={18} /> Crear Nuevo
+          </Link>
+        </div>
+
+        {/* Formulario de Creación de Categorías */}
         <CategoryForm />
 
         {/* Lista de Categorías Existentes */}
@@ -50,13 +72,13 @@ export default async function SettingsPage() {
             <div className="divide-y divide-slate-100">
               {categories.map((cat) => (
                 <div key={cat.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                  
+
                   {/* Info Categoría */}
                   <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4 items-center">
                     <div>
                       <p className="font-bold text-slate-900">{cat.name}</p>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-md">
                         {cat.minAge} - {cat.maxAge} años
@@ -90,10 +112,10 @@ export default async function SettingsPage() {
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-red-100">
             <h3 className="font-bold text-red-600 mb-2">Reiniciar Temporada</h3>
             <p className="text-sm text-slate-500 mb-6">
-              Esto eliminará todas las multas registradas hasta el momento. 
+              Esto eliminará todas las multas registradas hasta el momento.
               El contador de dinero volverá a $0, pero los participantes y las categorías se mantendrán.
             </p>
-            
+
             <ResetGameBtn />
           </div>
         </div>

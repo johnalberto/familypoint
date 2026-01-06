@@ -1,7 +1,7 @@
 "use client";
 
-import { updateCompetitor } from "@/app/competitors/actions";
-import { Save, User, Calendar, Image as ImageIcon, Palette } from "lucide-react";
+import { updateCompetitor, deleteCompetitor } from "@/app/competitors/actions";
+import { Save, User, Calendar, Image as ImageIcon, Palette, Trash2, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 
 interface EditCompetitorFormProps {
@@ -25,6 +25,13 @@ export function EditCompetitorForm({ competitor }: EditCompetitorFormProps) {
     // Pasamos el ID y el FormData a la Server Action
     await updateCompetitor(competitor.id, formData);
     // No necesitamos setIsPending(false) porque la acción hace redirect
+  };
+
+  const handleDelete = async () => {
+    if (confirm("¿Estás seguro de que quieres eliminar a este competidor? Esta acción no se puede deshacer.")) {
+      setIsPending(true);
+      await deleteCompetitor(competitor.id);
+    }
   };
 
   return (
@@ -117,6 +124,18 @@ export function EditCompetitorForm({ competitor }: EditCompetitorFormProps) {
         >
           {isPending ? "Guardando..." : <><Save size={20} /> Guardar Cambios</>}
         </button>
+
+        {/* Botón Eliminar (Zona de Peligro) */}
+        <div className="pt-6 mt-6 border-t border-slate-100">
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isPending}
+            className="w-full flex items-center justify-center gap-2 text-red-500 hover:text-red-600 hover:bg-red-50 p-4 rounded-xl transition-colors font-medium text-sm"
+          >
+            <Trash2 size={16} /> Eliminar Competidor
+          </button>
+        </div>
       </div>
     </form>
   );

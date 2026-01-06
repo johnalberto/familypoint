@@ -1,17 +1,19 @@
 import { db } from "@/lib/db";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
-import { es } from "date-fns/locale"; 
+import { es } from "date-fns/locale";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, FileWarning, Pencil } from "lucide-react"; // <--- 1. Agregado Pencil
+import { ArrowLeft, Calendar, FileWarning, Pencil } from "lucide-react";
 import { notFound } from "next/navigation";
+import { checkAdmin } from "@/lib/auth";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function CompetitorDetailPage({ params }: PageProps) {
+  const isAdmin = await checkAdmin();
   const { id } = await params;
 
   const competitor = await db.competitor.findUnique({
@@ -31,8 +33,8 @@ export default async function CompetitorDetailPage({ params }: PageProps) {
     <main className="min-h-screen bg-slate-50 p-6 md:p-12">
       <div className="max-w-3xl mx-auto">
         {/* Botón Volver */}
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-8 transition-colors font-medium"
         >
           <ArrowLeft size={20} /> Volver al Tablero
@@ -41,23 +43,27 @@ export default async function CompetitorDetailPage({ params }: PageProps) {
         {/* Encabezado del Perfil */}
         {/* 2. Agregado relative y group para posicionar el botón */}
         <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden mb-8 border border-slate-100 relative group">
-          
+
           {/* --- 3. BOTÓN DE EDITAR (NUEVO) --- */}
-          <Link 
-            href={`/competitors/${id}/edit`}
-            className="absolute top-4 right-4 bg-white/30 hover:bg-white text-white hover:text-slate-900 p-3 rounded-full backdrop-blur-md transition-all z-10 shadow-sm"
-            title="Editar Perfil"
-          >
-            <Pencil size={20} />
-          </Link>
+          {/* --- 3. BOTÓN DE EDITAR (SOLO ADMIN) --- */}
+          {isAdmin && (
+            <Link
+              href={`/competitors/${id}/edit`}
+              className="absolute top-4 right-4 bg-white/30 hover:bg-white text-white hover:text-slate-900 p-3 rounded-full backdrop-blur-md transition-all z-10 shadow-sm"
+              title="Editar Perfil"
+            >
+              <Pencil size={20} />
+            </Link>
+          )}
+          {/* ------------------------------- */}
           {/* ------------------------------- */}
 
-          <div 
+          <div
             className="h-32 w-full bg-slate-200 relative"
             style={{ backgroundColor: competitor.favoriteColor }}
           />
           <div className="px-8 pb-8 relative text-center sm:text-left sm:flex sm:items-end sm:justify-between">
-            
+
             {/* Foto Superpuesta */}
             <div className="relative -mt-16 mb-4 sm:mb-0">
               <div className="w-32 h-32 rounded-full border-[6px] border-white shadow-md overflow-hidden relative mx-auto sm:mx-0 bg-white">
@@ -99,8 +105,8 @@ export default async function CompetitorDetailPage({ params }: PageProps) {
         ) : (
           <div className="space-y-4">
             {competitor.infractions.map((inf) => (
-              <div 
-                key={inf.id} 
+              <div
+                key={inf.id}
                 className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:shadow-md transition-shadow"
               >
                 {/* Fecha */}

@@ -2,6 +2,8 @@ import { db } from "@/lib/db";
 import { EditCompetitorForm } from "@/components/EditCompetitorForm";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { checkAdmin } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { notFound } from "next/navigation";
 
 interface EditPageProps {
@@ -9,6 +11,12 @@ interface EditPageProps {
 }
 
 export default async function EditCompetitorPage({ params }: EditPageProps) {
+  // 0. VERIFICAR ADMIN
+  const isAdmin = await checkAdmin();
+  if (!isAdmin) {
+    redirect("/");
+  }
+
   const { id } = await params;
 
   const competitor = await db.competitor.findUnique({
