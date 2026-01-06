@@ -17,9 +17,15 @@ export default async function SettingsPage() {
     redirect("/"); // O mostrar un mensaje de error
   }
 
-  // 1. Obtener categorías ordenadas por edad
+  // 1. Obtener categorías
   const categories = await db.category.findMany({
     orderBy: { minAge: "asc" },
+  });
+
+  // 2. Obtener logs de auditoría (últimos 20)
+  const auditLogs = await db.auditLog.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 20,
   });
 
   return (
@@ -100,6 +106,31 @@ export default async function SettingsPage() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* --- AUDITORÍA (Ver Logs) --- */}
+        <div className="mt-12">
+          <h2 className="text-xl font-bold text-slate-800 mb-4">Registro de Auditoría</h2>
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            {auditLogs.length === 0 ? (
+              <div className="p-8 text-center text-slate-400">
+                No hay registros de actividad reciente.
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {auditLogs.map((log) => (
+                  <div key={log.id} className="p-4 text-sm">
+                    <div className="flex justify-between mb-1">
+                      <span className="font-bold text-slate-900">{log.action}</span>
+                      <span className="text-slate-400">{log.createdAt.toLocaleString()}</span>
+                    </div>
+                    <p className="text-slate-600 mb-1">{log.description}</p>
+                    <p className="text-xs text-slate-400">Por: {log.adminEmail}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* --- ZONA DE PELIGRO (Reset Game) --- */}

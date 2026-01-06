@@ -48,3 +48,12 @@ model Infraction {
   competitorId  String
   competitor    Competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
 }
+
+// Registro de Auditoría
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String   // Ej: "INFRACTION_DELETED"
+  description String   // Detalles (Monto, Razón, Competidor)
+  adminEmail  String   // Quién lo hizo
+  createdAt   DateTime @default(now())
+}

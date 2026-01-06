@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ArrowLeft, Calendar, FileWarning, Pencil } from "lucide-react";
 import { notFound } from "next/navigation";
 import { checkAdmin } from "@/lib/auth";
+import { DeleteInfractionBtn } from "@/components/DeleteInfractionBtn";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -118,6 +119,12 @@ export default async function CompetitorDetailPage({ params }: PageProps) {
                 {/* Razón */}
                 <div className="flex-1">
                   <p className="text-slate-800 font-bold text-lg">{inf.reason}</p>
+                  {/* Botón Eliminar (Solo Admin) */}
+                  {isAdmin && (
+                    <div className="ml-2">
+                      <DeleteInfractionBtn id={inf.id} />
+                    </div>
+                  )}
                 </div>
 
                 {/* Monto cobrado (Snapshot) */}

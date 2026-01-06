@@ -47,3 +47,45 @@ export async function createInfraction(formData: FormData) {
   // 6. Actualizar la pantalla sin recargar
   revalidatePath("/");
 }
+
+import { checkAdmin } from "@/lib/auth";
+import { stackServerApp } from "@/stack";
+
+export async function deleteInfraction(id: string) {
+  // 1. Verificar Admin
+  const isAdmin = await checkAdmin();
+  if (!isAdmin) {
+    throw new Error("No tienes permisos para realizar esta acción.");
+  }
+
+  const user = await stackServerApp.getUser();
+  const adminEmail = user?.primaryEmail || "unknown";
+
+  // 2. Buscar la infracción antes de borrarla (para el log)
+  const infraction = await db.infraction.findUnique({
+    where: { id },
+    include: { competitor: true },
+  });
+
+  if (!infraction) {
+    throw new Error("Infracción no encontrada.");
+  }
+
+  // 3. Crear registro de auditoría
+  await db.auditLog.create({
+    data: {
+      action: "INFRACTION_DELETED",
+      description: `Se eliminó multa de $${infraction.amountCharged} a ${infraction.competitor.name}. Motivo: ${infraction.reason}`,
+      adminEmail: adminEmail,
+    },
+  });
+
+  // 4. Eliminar la infracción
+  await db.infraction.delete({
+    where: { id },
+  });
+
+  // 5. Revalidar
+  revalidatePath("/");
+  revalidatePath(`/competitors/${infraction.competitorId}`);
+}

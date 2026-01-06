@@ -67,7 +67,7 @@ export default async function Home() {
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-indigo-200">
-            El Pozo Familiar
+            Familia Carreno Borre 🏠
           </h1>
           <p className="text-blue-200 text-lg mb-8 font-medium">¿Quién paga la próxima pizza? 🍕</p>
 
